@@ -158,4 +158,23 @@ public class PMController {
     public String updateHoliday(LeaveForm leaveForm,int id);
     public String delHolidayById(int id);
     * */
+
+    @PostMapping(value = "/getAllRoles")
+    public List<TRole> getAllRoles(){return pms.getAllRoles();};
+    @PostMapping(value = "/getRoleById")
+    public TRole getRoleById(int id){return pms.getRoleById(id);};
+    @PostMapping(value = "/delRoleById")
+    public String delRoleById(int id){return pms.delRoleById(id);};
+    @PostMapping(value = "/updateRole")
+    public String updateRole(int id, String name){return pms.updateRole(id, name);};
+    @PostMapping(value = "/getAllPermissions")
+    public List<TPermissions> getAllPermissions(){return pms.getAllPermissions();};
+    @PostMapping(value = "/selectPermissionByCondition")
+    public List<TPermissions> selectPermissionByCondition(Integer roleId, Integer menuId){return pms.selectPermissionByCondition(roleId, menuId);};
+    @PostMapping(value = "/addPermission")
+    public String addPermission(Integer roleId, Integer menuId){return pms.addPermission(roleId, menuId);};
+    @PostMapping(value = "delPermissionById")
+    public String delPermissionById(int id){return pms.delPermissionById(id);};
+    @PostMapping(value = "updatePermissionByCondition")
+    public String updatePermissionByCondition(int id, Integer roleId, Integer menuId){return pms.updatePermissionByCondition(id, roleId, menuId);};
 }
