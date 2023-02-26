@@ -31,6 +31,15 @@ public class PersonnelManagementServiceImpl implements PersonnelManagementServic
     @Autowired
     private TConfigDao tConfigDao;
 
+    @Autowired
+    private TRoleDao tRoleDao;
+
+    @Autowired
+    private TMenuDao tMenuDao;
+
+    @Autowired
+    private TPermissionsDao tPermissionsDao;
+
     @Override
     public boolean login(TUser user) {
         HashMap<String,Object> map = new HashMap<>();
@@ -252,5 +261,98 @@ public class PersonnelManagementServiceImpl implements PersonnelManagementServic
         else
             return "非草稿状态不可以删除！";
 
+    }
+
+    @Override
+    public List<TRole> getAllRoles() {
+        QueryWrapper<TRole> qw = new QueryWrapper<>();
+        List<TRole> roleList = tRoleDao.selectList(qw);
+        return roleList;
+    }
+
+    @Override
+    public String delRoleById(int id) {
+        QueryWrapper<TRole> qw = new QueryWrapper<>();
+        qw.lambda().eq(TRole::getRoleId, id);
+        QueryWrapper<TUser> qw2 = new QueryWrapper<>();
+        qw2.lambda().eq(TUser::getUserRoleId, id);
+        if(tUserDao.selectList(qw2) == null){
+            if(tRoleDao.delete(qw) == 1)
+                return "删除成功！";
+            else
+                return "删除失败！";
+        }else{
+            return "该角色下还有用户关联，不允许删除！";
+        }
+    }
+
+    @Override
+    public TRole getRoleById(int id) {
+        QueryWrapper<TRole> qw = new QueryWrapper<>();
+        qw.lambda().eq(TRole::getRoleId, id);
+        TRole tRole = tRoleDao.selectOne(qw);
+        return tRole;
+    }
+
+    @Override
+    public String updateRole(int id, String name) {
+        TRole tRole = new TRole();
+        tRole.setRoleId(id);
+        tRole.setRoleName(name);
+        if(tRoleDao.updateById(tRole) == 1) {
+            return "修改成功！";
+        }else {
+            return "修改失败！";
+        }
+    }
+
+    @Override
+    public List<TPermissions> getAllPermissions() {
+        QueryWrapper<TPermissions> qw = new QueryWrapper<>();
+        List<TPermissions> tPermissions = tPermissionsDao.selectList(qw);
+        return tPermissions;
+    }
+
+    @Override
+    public List<TPermissions> selectPermissionByCondition(Integer roleId, Integer menuId) {
+        QueryWrapper<TPermissions> qw = new QueryWrapper<>();
+        qw.lambda().eq(roleId != null, TPermissions::getPerRoleId, roleId)
+                .eq(menuId != null, TPermissions::getPerMenuId, menuId);
+        return tPermissionsDao.selectList(qw);
+    }
+
+    @Override
+    public String addPermission(Integer roleId, Integer menuId) {
+        TPermissions tPermissions = new TPermissions();
+        tPermissions.setPerRoleId(roleId);
+        tPermissions.setPerMenuId(menuId);
+        if(tPermissionsDao.insert(tPermissions) == 1){
+            return "添加成功！";
+        }else{
+            return "添加失败！";
+        }
+
+    }
+
+    @Override
+    public String delPermissionById(int id) {
+        if(tPermissionsDao.deleteById(id) == 1){
+            return "删除成功！";
+        }else{
+            return "删除失败！";
+        }
+    }
+
+    @Override
+    public String updatePermissionByCondition(int id, Integer roleId, Integer menuId) {
+        TPermissions tPermissions = new TPermissions();
+        tPermissions.setPerId(id);
+        tPermissions.setPerMenuId(menuId);
+        tPermissions.setPerRoleId(roleId);
+        if(tPermissionsDao.updateById(tPermissions) == 1){
+            return "修改成功！";
+        }else{
+            return "修改失败！";
+        }
     }
 }
